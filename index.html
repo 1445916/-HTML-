@@ -1,0 +1,582 @@
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>百丈漈 - 中国第一高瀑</title>
+        <!-- 引入Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- 引入Font Awesome -->
+        <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <!-- 引入Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+        <!-- 配置Tailwind -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#1E88E5', // 主色调：天空蓝，代表水和天空
+                            secondary: '#43A047', // 辅助色：绿色，代表自然和森林
+                            accent: '#FF8F00', // 强调色：橙色，代表活力和温暖
+                            dark: '#1A202C', // 深色：用于文本
+                            light: '#F8FAFC', // 浅色：用于背景
+                        },
+                        fontFamily: {
+                            sans: ['Inter', 'system-ui', 'sans-serif'],
+                        },
+                        boxShadow: {
+                            'elevation-1': '0 2px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)',
+                            'elevation-2': '0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.1)',
+                            'elevation-3': '0 10px 15px rgba(0,0,0,0.07), 0 5px 10px rgba(0,0,0,0.05)',
+                            'elevation-4': '0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04)',
+                        }
+                    },
+                }
+            }
+        </script>
+        <!-- 自定义工具类 -->
+        <style type="text/tailwindcss">
+            @layer utilities {
+                .content-auto {
+                    content-visibility: auto;
+                }
+                .text-shadow {
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .text-shadow-lg {
+                    text-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+                }
+                .bg-blur {
+                    backdrop-filter: blur(8px);
+                }
+                .animate-float {
+                    animation: float 6s ease-in-out infinite;
+                }
+                @keyframes float {
+                    0% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                    100% { transform: translateY(0px); }
+                }
+            }
+        </style>
+        <style>
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                overflow-x: hidden;
+            }
+            .hero-gradient {
+                background: linear-gradient(135deg, rgba(30, 136, 229, 0.9) 0%, rgba(67, 160, 71, 0.8) 100%);
+            }
+            .section-odd {
+                background-color: #F8FAFC;
+            }
+            .section-even {
+                background-color: #EDF2F7;
+            }
+            .parallax {
+                background-attachment: fixed;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+            .image-container {
+                overflow: hidden;
+            }
+            .image-container img {
+                transition: transform 0.5s ease;
+            }
+            .image-container:hover img {
+                transform: scale(1.05);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-10px);
+            }
+        </style>
+    </head>
+    <body class="font-sans text-dark">
+        <!-- 导航栏 -->
+        <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-white text-shadow-lg flex items-center">
+                    <i class="fa fa-water mr-2 text-accent"></i>
+                    <span>百丈漈</span>
+                </a>
+
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-white hover:text-accent transition-colors font-medium">首页</a>
+                <a href="about.html" class="text-white hover:text-accent transition-colors font-medium">景区介绍</a>
+                <a href="attractions.html" class="text-white hover:text-accent transition-colors font-medium">景点详情</a>
+                <a href="travel-guide.html" class="text-white hover:text-accent transition-colors font-medium">旅游攻略</a>
+                <a href="reviews.html" class="text-white hover:text-accent transition-colors font-medium">游客评价</a>
+                <a href="contact.html" class="text-white hover:text-accent transition-colors font-medium">联系我们</a>
+                <a href="activities.html" class="text-white hover:text-accent transition-colors font-medium">活动详情</a>
+                </div>
+
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-white text-2xl">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white/90 bg-blur shadow-elevation-2 absolute w-full">
+                <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+                <a href="index.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">首页</a>
+                <a href="about.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">景区介绍</a>
+                <a href="attractions.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">景点详情</a>
+                <a href="travel-guide.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">旅游攻略</a>
+                <a href="reviews.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">游客评价</a>
+                <a href="contact.html" class="text-dark hover:text-primary transition-colors font-medium py-2">联系我们</a>
+                <a href="activities.html" class="text-dark hover:text-primary transition-colors font-medium py-2">活动详情</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 英雄区域 -->
+        <section id="hero" class="relative h-screen flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="images/zhuye.jpg" alt="百丈漈全景" class="w-full h-full object-cover">
+                <div class="absolute inset-0 hero-gradient opacity-70"></div>
+            </div>
+
+            <div class="container mx-auto px-4 z-10 text-center">
+                <h1 class="text-[clamp(2.5rem,6vw,5rem)] font-bold text-white mb-6 text-shadow-lg animate-fade-in">
+                    百丈漈
+                </h1>
+                <p class="text-[clamp(1.2rem,3vw,1.8rem)] text-white/90 mb-10 max-w-3xl mx-auto text-shadow">
+                    中国第一高瀑，感受大自然的磅礴力量
+                </p>
+                <a href="about.html" class="inline-block bg-accent hover:bg-accent/90 text-white font-bold py-4 px-8 rounded-full shadow-elevation-3 transition-all transform hover:scale-105 hover:shadow-elevation-4">
+                    探索百丈漈 <i class="fa fa-arrow-down ml-2"></i>
+                </a>
+            </div>
+
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <a href="about.html" class="text-white text-4xl opacity-80 hover:opacity-100 transition-opacity">
+                    <i class="fa fa-angle-down"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- 景区概览 -->
+        <section class="py-20 section-odd">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">景区概览</h2>
+                    <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                    <p class="text-gray-600 max-w-3xl mx-auto text-lg">探索这个令人惊叹的自然奇观</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <a href="attractions.html#first-fall" class="block">
+                        <div class="bg-white rounded-xl overflow-hidden shadow-elevation-3 card-hover">
+                            <div class="image-container h-64">
+                                <img src="images\baizhang1ji.jpg" alt="百丈一漈" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-primary mb-3">百丈一漈</h3>
+                                <p class="text-gray-700 mb-4">
+                                    百丈一漈的垂直落差为207米‌，是中国单体落差最高的瀑布之一，具有“天下第一瀑”的美誉。
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500"><i class="fa fa-map-marker mr-1"></i> 景区上游</span>
+                                    <span class="text-primary hover:text-primary/80 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="attractions.html#second-fall" class="block">
+                        <div class="bg-white rounded-xl overflow-hidden shadow-elevation-3 card-hover">
+                            <div class="image-container h-64">
+                                <img src="images/baizhang2ji.jpg" alt="百丈二漈" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-primary mb-3">百丈二漈</h3>
+                                <p class="text-gray-700 mb-4">
+                                    瀑流被岩石分成两半，后方有天然栈道，可体验"人在瀑中走"的奇妙感受。
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500"><i class="fa fa-map-marker mr-1"></i> 景区中游</span>
+                                    <span class="text-primary hover:text-primary/80 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="attractions.html#third-fall" class="block">
+                        <div class="bg-white rounded-xl overflow-hidden shadow-elevation-3 card-hover">
+                            <div class="image-container h-64">
+                                <img src="images/baizhangji3.jpg" alt="百丈三漈" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-primary mb-3">百丈三漈</h3>
+                                <p class="text-gray-700 mb-4">
+                                    全国最宽的瀑布，宽约80米，瀑流平铺而下，阳光照射下常现彩虹。
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-500"><i class="fa fa-map-marker mr-1"></i> 景区下游</span>
+                                    <span class="text-primary hover:text-primary/80 font-medium">查看详情 <i class="fa fa-arrow-right ml-1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <a href="attractions.html" class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-full shadow-elevation-2 transition-all transform hover:scale-105">
+                        查看全部景点 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最新活动 -->
+        <section class="py-20 section-even">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">最新活动</h2>
+                    <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                    <p class="text-gray-600 max-w-3xl mx-auto text-lg">参与我们的特色活动，体验不一样的百丈漈</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-elevation-3 card-hover">
+                        <div class="relative">
+                            <div class="absolute top-4 left-4 bg-accent text-white text-sm font-bold px-3 py-1 rounded-full">
+                                进行中
+                            </div>
+                            <img src="images/夏季摄影大赛.png" alt="夏季摄影大赛" class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-primary mb-3">夏季摄影大赛</h3>
+                            <p class="text-gray-700 mb-4">
+                                捕捉百丈漈夏季的壮丽景色，参与我们的摄影大赛，赢取丰厚奖品！
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500"><i class="fa fa-calendar mr-1"></i> 2025.06.01-2025.08.31</span>
+                                <a href="activities.html" class="text-primary hover:text-primary/80 font-medium">了解详情 <i class="fa fa-arrow-right ml-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl overflow-hidden shadow-elevation-3 card-hover">
+                        <div class="relative">
+                            <div class="absolute top-4 left-4 bg-green-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                                即将开始
+                            </div>
+                            <img src="images/百丈漈徒步节.png" alt="秋季徒步节" class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-primary mb-3">秋季徒步节</h3>
+                            <p class="text-gray-700 mb-4">
+                                与自然亲密接触，探索百丈漈的秋季美景，体验难忘的徒步之旅。
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500"><i class="fa fa-calendar mr-1"></i> 2025.09.15-2025.10.30</span>
+                                <a href="activities.html" class="text-primary hover:text-primary/80 font-medium">了解详情 <i class="fa fa-arrow-right ml-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl overflow-hidden shadow-elevation-3 card-hover">
+                        <div class="relative">
+                            <div class="absolute top-4 left-4 bg-blue-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                                特色活动
+                            </div>
+                            <img src="images/liujimiao.jpg" alt="文化体验日" class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-primary mb-3">刘伯温文化体验日</h3>
+                            <p class="text-gray-700 mb-4">
+                                了解明朝开国元勋刘伯温的传奇故事，体验传统手工艺和文化活动。
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500"><i class="fa fa-calendar mr-1"></i> 每周六</span>
+                                <a href="activities.html" class="text-primary hover:text-primary/80 font-medium">了解详情 <i class="fa fa-arrow-right ml-1"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 游客评价 -->
+        <section class="py-20 section-odd">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">游客心声</h2>
+                    <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                    <p class="text-gray-600 max-w-3xl mx-auto text-lg">听听他们对百丈漈的真实感受</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl p-6 shadow-elevation-3 relative card-hover">
+                        <div class="text-primary text-5xl absolute top-4 right-4 opacity-10">
+                            <i class="fa fa-quote-right"></i>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <img src="https://picsum.photos/id/1001/60/60" alt="用户头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <h4 class="font-bold">张先生</h4>
+                                <div class="flex text-yellow-400 text-sm">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4 relative z-10">
+                            "百丈漈的景色非常壮观，尤其是一漈的瀑布，气势磅礴，令人震撼。景区的设施也很完善。"
+                        </p>
+                        <div class="text-gray-500 text-sm">
+                            <span class="mr-4"><i class="fa fa-calendar mr-1"></i> 2025-04-15</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-elevation-3 relative card-hover">
+                        <div class="text-primary text-5xl absolute top-4 right-4 opacity-10">
+                            <i class="fa fa-quote-right"></i>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <img src="https://picsum.photos/id/1002/60/60" alt="用户头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <h4 class="font-bold">李女士</h4>
+                                <div class="flex text-yellow-400 text-sm">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star-half-o"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4 relative z-10">
+                            "带着家人一起来的，孩子们非常喜欢。二漈的水帘洞很有趣，可以近距离接触瀑布。"
+                        </p>
+                        <div class="text-gray-500 text-sm">
+                            <span class="mr-4"><i class="fa fa-calendar mr-1"></i> 2025-05-02</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-6 shadow-elevation-3 relative card-hover">
+                        <div class="text-primary text-5xl absolute top-4 right-4 opacity-10">
+                            <i class="fa fa-quote-right"></i>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <img src="https://picsum.photos/id/1003/60/60" alt="用户头像" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <h4 class="font-bold">王先生</h4>
+                                <div class="flex text-yellow-400 text-sm">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star-o"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4 relative z-10">
+                            "百丈漈确实名不虚传，尤其是在雨后，瀑布水量大增，非常壮观。景区内的步道设计合理。"
+                        </p>
+                        <div class="text-gray-500 text-sm">
+                            <span class="mr-4"><i class="fa fa-calendar mr-1"></i> 2025-03-28</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center">
+                    <a href="reviews.html" class="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-full shadow-elevation-2 transition-all transform hover:scale-105">
+                        查看全部评价 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="bg-dark text-white pt-16 pb-8">
+            <div class="container mx-auto px-4">
+                <div class="grid md:grid-cols-4 gap-8 mb-12">
+                    <div>
+                        <h3 class="text-xl font-bold mb-6 flex items-center">
+                            <i class="fa fa-water mr-2 text-accent"></i>
+                            <span>百丈漈</span>
+                        </h3>
+                        <p class="text-gray-400 mb-6">
+                            中国第一高瀑，位于浙江省温州市文成县，是一处集自然景观与人文历史于一体的旅游胜地。
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-weixin text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-weibo text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-youtube-play text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-instagram text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-6">快速链接</h3>
+                        <ul class="space-y-3">
+                            <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                            <li><a href="about.html" class="text-gray-400 hover:text-white transition-colors">景区介绍</a></li>
+                            <li><a href="attractions.html" class="text-gray-400 hover:text-white transition-colors">景点详情</a></li>
+                            <li><a href="travel-guide.html" class="text-gray-400 hover:text-white transition-colors">旅游攻略</a></li>
+			                <li><a href="reviews.html" class="text-gray-400 hover:text-white transition-colors">游客评价</a></li>
+			                <li><a href="contact.html" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+                            <li><a href="activities.html" class="text-gray-400 hover:text-white transition-colors">活动详情</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-6">景点信息</h3>
+                        <ul class="space-y-3">
+                            <li><a href="attractions.html#first-fall" class="text-gray-400 hover:text-white transition-colors">百丈一漈</a></li>
+                            <li><a href="attractions.html#second-fall" class="text-gray-400 hover:text-white transition-colors">百丈二漈</a></li>
+                            <li><a href="attractions.html#third-fall" class="text-gray-400 hover:text-white transition-colors">百丈三漈</a></li>
+                            <li><a href="attractions.html#liuji-temple" class="text-gray-400 hover:text-white transition-colors">刘基庙</a></li>
+                            <li><a href="attractions.html#tian-ding-lake" class="text-gray-400 hover:text-white transition-colors">天顶湖</a></li>
+                            <li><a href="attractions.html#stone-frog" class="text-gray-400 hover:text-white transition-colors">彩虹桥</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-6">联系我们</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">浙江省温州市文成县百丈漈镇</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-phone text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">0577-12345678</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-envelope text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">info@baizhangji.com</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">08:00-17:00 (每日)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 pt-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p class="text-gray-500 mb-4 md:mb-0">
+                            &copy; 2025 百丈漈景区管理委员会. 保留所有权利.
+                        </p>
+                        <div class="flex space-x-6">
+                            <a href="Privacy Policy.html" class="text-gray-500 hover:text-white transition-colors">隐私政策</a>
+                            <a href="terms.html" class="text-gray-500 hover:text-white transition-colors">使用条款</a>
+                            <a href="viewport.html" class="text-gray-500 hover:text-white transition-colors">网站地图</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- 回到顶部按钮 -->
+        <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary hover:bg-primary/90 text-white p-3 rounded-full shadow-elevation-2 transition-all transform hover:scale-110 opacity-0 invisible">
+            <i class="fa fa-arrow-up"></i>
+        </button>
+
+        <!-- JavaScript -->
+        <script>
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            const backToTop = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-white', 'shadow-elevation-2');
+                    navbar.classList.remove('bg-transparent');
+
+                    // 改变导航链接颜色
+                    const navLinks = navbar.querySelectorAll('a:not(.text-xl)');
+                    navLinks.forEach(link => {
+                        link.classList.remove('text-white');
+                        link.classList.add('text-dark');
+                    });
+
+                    // 显示回到顶部按钮
+                    backToTop.classList.remove('opacity-0', 'invisible');
+                    backToTop.classList.add('opacity-100', 'visible');
+                } else {
+                    navbar.classList.remove('bg-white', 'shadow-elevation-2');
+                    navbar.classList.add('bg-transparent');
+
+                    // 恢复导航链接颜色
+                    const navLinks = navbar.querySelectorAll('a:not(.text-xl)');
+                    navLinks.forEach(link => {
+                        link.classList.add('text-white');
+                        link.classList.remove('text-dark');
+                    });
+
+                    // 隐藏回到顶部按钮
+                    backToTop.classList.add('opacity-0', 'invisible');
+                    backToTop.classList.remove('opacity-100', 'visible');
+                }
+            });
+
+            // 移动端菜单切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // 回到顶部按钮
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // 关闭移动菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // 平滑滚动到子页面
+            document.querySelectorAll('a[href^="."]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    // 关闭移动菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        </script>
+    </body>
+    </html>

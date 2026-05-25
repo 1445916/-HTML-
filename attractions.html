@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>景点详情 - 百丈漈</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 配置Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E88E5', // 主色调：天空蓝，代表水和天空
+                        secondary: '#43A047', // 辅助色：绿色，代表自然和森林
+                        accent: '#FF8F00', // 强调色：橙色，代表活力和温暖
+                        dark: '#1A202C', // 深色：用于文本
+                        light: '#F8FAFC', // 浅色：用于背景
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'elevation-1': '0 2px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)',
+                        'elevation-2': '0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.1)',
+                        'elevation-3': '0 10px 15px rgba(0,0,0,0.07), 0 5px 10px rgba(0,0,0,0.05)',
+                        'elevation-4': '0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04)',
+                    }
+                },
+            }
+        }
+    </script>
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+                100% { transform: translateY(0px); }
+            }
+        }
+    </style>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            overflow-x: hidden;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.9) 0%, rgba(67, 160, 71, 0.8) 100%);
+        }
+        .section-odd {
+            background-color: #F8FAFC;
+        }
+        .section-even {
+            background-color: #EDF2F7;
+        }
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .image-container {
+            overflow: hidden;
+        }
+        .image-container img {
+            transition: transform 0.5s ease;
+        }
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+        }
+        .map-container {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+    <body class="font-sans text-dark">
+        <!-- 导航栏 -->
+        <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-white text-shadow-lg flex items-center">
+                    <i class="fa fa-water mr-2 text-accent"></i>
+                    <span>百丈漈</span>
+                </a>
+
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-white hover:text-accent transition-colors font-medium">首页</a>
+                <a href="about.html" class="text-white hover:text-accent transition-colors font-medium">景区介绍</a>
+                <a href="attractions.html" class="text-white hover:text-accent transition-colors font-medium">景点详情</a>
+                <a href="travel-guide.html" class="text-white hover:text-accent transition-colors font-medium">旅游攻略</a>
+                <a href="reviews.html" class="text-white hover:text-accent transition-colors font-medium">游客评价</a>
+                <a href="contact.html" class="text-white hover:text-accent transition-colors font-medium">联系我们</a>
+                <a href="activities.html" class="text-white hover:text-accent transition-colors font-medium">活动详情</a>
+                </div>
+
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-white text-2xl">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white/90 bg-blur shadow-elevation-2 absolute w-full">
+                <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+                <a href="index.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">首页</a>
+                <a href="about.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">景区介绍</a>
+                <a href="attractions.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">景点详情</a>
+                <a href="travel-guide.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">旅游攻略</a>
+                <a href="reviews.html" class="text-dark hover:text-primary transition-colors font-medium py-2 border-b border-gray-100">游客评价</a>
+                <a href="contact.html" class="text-dark hover:text-primary transition-colors font-medium py-2">联系我们</a>
+                <a href="activities.html" class="text-dark hover:text-primary transition-colors font-medium py-2">活动详情</a>
+                </div>
+            </div>
+        </nav>
+
+    <!-- 英雄区域 -->
+    <section class="relative h-64 flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="images/baizhangjiquantu.jpg" alt="百丈漈全景" class="w-full h-full object-cover">
+            <div class="absolute inset-0 hero-gradient opacity-70"></div>
+        </div>
+
+        <div class="container mx-auto px-4 z-10 text-center">
+            <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold text-white mb-6 text-shadow-lg">
+                景点详情
+            </h1>
+            <nav class="flex justify-center" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="index.html" class="inline-flex items-center text-white hover:text-accent">
+                            <i class="fa fa-home mr-2"></i>
+                            首页
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fa fa-angle-right text-white mx-2"></i>
+                            <span class="text-white">景点详情</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- 景点导航 -->
+    <section class="py-12 bg-light">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#first-fall" class="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors shadow-elevation-1">
+                    百丈一漈
+                </a>
+                <a href="#second-fall" class="px-6 py-3 bg-white text-primary border border-primary rounded-full hover:bg-primary/5 transition-colors shadow-elevation-1">
+                    百丈二漈
+                </a>
+                <a href="#third-fall" class="px-6 py-3 bg-white text-primary border border-primary rounded-full hover:bg-primary/5 transition-colors shadow-elevation-1">
+                    百丈三漈
+                </a>
+                <a href="#liuji-temple" class="px-6 py-3 bg-white text-primary border border-primary rounded-full hover:bg-primary/5 transition-colors shadow-elevation-1">
+                    刘基庙
+                </a>
+                <a href="#tian-ding-lake" class="px-6 py-3 bg-white text-primary border border-primary rounded-full hover:bg-primary/5 transition-colors shadow-elevation-1">
+                    天顶湖
+                </a>
+                <a href="#rainbow-bridge" class="px-6 py-3 bg-white text-primary border border-primary rounded-full hover:bg-primary/5 transition-colors shadow-elevation-1">
+                    彩虹桥
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 景点详情 -->
+    <section id="first-fall" class="py-20 section-odd">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">百丈一漈</h2>
+                <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto text-lg">中国第一高瀑，气势磅礴</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="image-container rounded-xl overflow-hidden shadow-elevation-3">
+                    <img src="images/baizhang1ji.jpg" alt="百丈一漈" class="w-full h-auto">
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-primary mb-4">中国第一高瀑</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        百丈一漈是百丈漈瀑布群中最为壮观的一漈，落差达207米，被誉为"中国第一高瀑"。瀑布如银河倒泻，气势磅礴，震撼人心。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        站在观瀑台上，感受着瀑布飞溅的水雾和震耳欲聋的轰鸣声，仿佛能感受到大自然的磅礴力量。每到夏季，这里更是避暑胜地，清凉的水雾让人心旷神怡。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        百丈一漈也是摄影爱好者的天堂，无论是晴天的蓝天白云，还是雨天的云雾缭绕，都能拍出令人惊叹的照片。
+                    </p>
+
+                    <div class="bg-light p-6 rounded-xl shadow-elevation-1 mb-6">
+                        <h4 class="text-lg font-bold text-primary mb-4 flex items-center">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            景点信息
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">位于景区最顶端，需步行约20分钟到达</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">最佳观赏时间：夏季（水量充足）、晴天（可能出现彩虹）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-exclamation-triangle text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">注意事项：观赏时注意安全，瀑布附近较滑；夏季需携带雨具，防止被水雾打湿</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 百丈二漈 -->
+    <section id="second-fall" class="py-20 section-even">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">百丈二漈</h2>
+                <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto text-lg">水帘洞奇观，晶莹剔透</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <h3 class="text-2xl font-bold text-primary mb-4">水帘洞奇观</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        百丈二漈高68米，瀑布如珠帘垂地，晶莹剔透。最为奇特的是，在瀑布后面有一条天然的石廊，人可以从廊中穿过，仿佛置身于《西游记》中的水帘洞一般。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        站在石廊中，感受着瀑布从头顶倾泻而下，形成一道天然的水幕，阳光透过水雾折射出七彩光芒，美不胜收。这里也是游客最喜欢拍照留念的地方之一。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        二漈的水流相对较缓，瀑布下形成了一个深潭，潭水清澈见底，周围绿树成荫，是一处难得的避暑胜地。
+                    </p>
+
+                    <div class="bg-light p-6 rounded-xl shadow-elevation-1 mb-6">
+                        <h4 class="text-lg font-bold text-primary mb-4 flex items-center">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            景点信息
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">位于一漈下方，需步行约15分钟到达</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">最佳观赏时间：全天，夏季更佳</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-exclamation-triangle text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">注意事项：石廊内较湿滑，需穿防滑鞋；进入石廊需准备雨具，防止被水雾打湿</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="order-1 md:order-2 image-container rounded-xl overflow-hidden shadow-elevation-3">
+                    <img src="images/baizhang2ji.jpg" alt="百丈二漈" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 百丈三漈 -->
+    <section id="third-fall" class="py-20 section-odd">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">百丈三漈</h2>
+                <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto text-lg">如仙女散花，轻盈飘逸</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="image-container rounded-xl overflow-hidden shadow-elevation-3">
+                    <img src="images/baizhangji3.jpg" alt="百丈三漈" class="w-full h-auto">
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-primary mb-4">仙女散花</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        百丈三漈高12米，水流较为平缓，如仙女散花般轻盈飘逸。瀑布下是一片开阔的浅滩，溪水清澈见底，是游客嬉戏玩水的好去处。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        三漈周围植被茂盛，空气清新，是一处天然的氧吧。每到春季，周围的野花竞相开放，五彩斑斓，美不胜收；秋季则红叶满山，景色迷人。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        这里也是亲子游玩的最佳选择，孩子们可以在浅滩中捉鱼嬉戏，感受大自然的乐趣。
+                    </p>
+
+                    <div class="bg-light p-6 rounded-xl shadow-elevation-1 mb-6">
+                        <h4 class="text-lg font-bold text-primary mb-4 flex items-center">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            景点信息
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">位于景区最下方，从二漈步行约10分钟到达</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">最佳观赏时间：春季（赏花）、秋季（红叶）、夏季（玩水）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-exclamation-triangle text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">注意事项：浅滩游玩时注意安全，避免滑倒；夏季玩水需注意防晒</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 刘基庙 -->
+    <section id="liuji-temple" class="py-20 section-even">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">刘基庙</h2>
+                <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto text-lg">纪念明朝开国元勋刘伯温的庙宇</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <h3 class="text-2xl font-bold text-primary mb-4">历史文化古迹</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        刘基庙，又称诚意伯庙，是纪念明朝开国元勋刘伯温的庙宇。始建于明朝天顺三年（1459年），现存建筑为清代重建，是浙南地区现存最完整的明代宗祠建筑群。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        庙内保存有大量明清时期的碑刻、匾额和文物，其中最著名的是明正德皇帝御赐的"开国文臣第一"匾额。庙内的建筑雕梁画栋，工艺精湛，充分体现了古代建筑艺术的高超水平。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        每年农历正月十五和刘伯温诞辰日，当地都会举行盛大的祭祀活动，吸引了众多游客和刘氏后裔前来参加。
+                    </p>
+
+                    <div class="bg-light p-6 rounded-xl shadow-elevation-1 mb-6">
+                        <h4 class="text-lg font-bold text-primary mb-4 flex items-center">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            景点信息
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">位于文成县南田镇新宅村，距离百丈漈景区约15公里</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">开放时间：08:00-17:00</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-ticket text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">门票：30元/人</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-exclamation-triangle text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">注意事项：参观时请保持安静，尊重历史文化；庙内禁止拍照</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="order-1 md:order-2 image-container rounded-xl overflow-hidden shadow-elevation-3">
+                    <img src="images/liujimiao.jpg" alt="刘基庙" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 天顶湖 -->
+    <section id="tian-ding-lake" class="py-20 section-odd">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">天顶湖</h2>
+                <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto text-lg">高峡平湖，湖光山色</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="image-container rounded-xl overflow-hidden shadow-elevation-3">
+                    <img src="images/天顶湖.jpg" alt="天顶湖" class="w-full h-auto">
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-primary mb-4">高峡平湖</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        天顶湖是百丈漈景区的重要组成部分，是一个人工湖，因位于海拔638米的高山之巅而得名。湖面面积5.4平方公里，蓄水量1.4亿立方米，是浙江省最大的高山湖泊之一。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        天顶湖四周群山环抱，湖光山色，美不胜收。湖水清澈透明，碧波荡漾，湖中岛屿星罗棋布，形态各异。在这里，你可以乘船游览湖光山色，也可以在湖边散步、钓鱼，享受宁静的自然时光。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        天顶湖也是观赏日出和日落的绝佳地点，每当清晨或傍晚，湖面波光粼粼，与周围的山峦、云雾交相辉映，构成一幅美丽的画卷。
+                    </p>
+
+                    <div class="bg-light p-6 rounded-xl shadow-elevation-1 mb-6">
+                        <h4 class="text-lg font-bold text-primary mb-4 flex items-center">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            景点信息
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">位于百丈漈景区内，从景区入口乘车约15分钟到达</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">最佳观赏时间：清晨（日出）、傍晚（日落）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-ticket text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">门票：包含在景区门票内；游船票价：30元/人</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-exclamation-triangle text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">注意事项：乘船时请穿好救生衣，注意安全；湖边风大，注意保暖</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 石蛙观瀑 -->
+    <section id="stone-frog" class="py-20 section-even"></section>
+
+    <!-- 彩虹桥 -->
+    <section id="rainbow-bridge" class="py-20 section-even">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-dark mb-4">彩虹桥</h2>
+                <div class="w-24 h-1 bg-primary mx-auto mb-6"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto text-lg">阳光明媚时的绝美景观</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="image-container rounded-xl overflow-hidden shadow-elevation-3">
+                    <img src="images/彩虹桥.jpg" alt="彩虹桥" class="w-full h-auto">
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold text-primary mb-4">阳光与水雾的完美结合</h3>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        彩虹桥位于百丈一漈下方，是一座横跨溪流的石拱桥。每当阳光明媚的日子，瀑布飞溅的水雾在阳光的折射下会形成美丽的彩虹，横跨在桥的上方，形成"彩虹桥"的绝美景观。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        彩虹桥的最佳观赏时间是上午9点至下午3点，此时阳光充足，彩虹出现的概率最高。而且，不同的季节和天气条件下，彩虹的颜色和形状也会有所不同，非常神奇。
+                    </p>
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        站在彩虹桥上，感受着脚下潺潺的溪流和眼前绚丽的彩虹，仿佛置身于仙境之中。这里也是情侣们拍照留念的热门地点，象征着爱情的美好和永恒。
+                    </p>
+
+                    <div class="bg-light p-6 rounded-xl shadow-elevation-1 mb-6">
+                        <h4 class="text-lg font-bold text-primary mb-4 flex items-center">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            景点信息
+                        </h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">位于一漈下方，步行约10分钟到达</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">最佳观赏时间：上午9点至下午3点（晴天）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-exclamation-triangle text-primary mt-1 mr-3"></i>
+                                <span class="text-gray-700">注意事项：桥上游客较多，请注意安全；观赏彩虹时请佩戴太阳镜，保护眼睛</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- 页脚 -->
+        <footer class="bg-dark text-white pt-16 pb-8">
+            <div class="container mx-auto px-4">
+                <div class="grid md:grid-cols-4 gap-8 mb-12">
+                    <div>
+                        <h3 class="text-xl font-bold mb-6 flex items-center">
+                            <i class="fa fa-water mr-2 text-accent"></i>
+                            <span>百丈漈</span>
+                        </h3>
+                        <p class="text-gray-400 mb-6">
+                            中国第一高瀑，位于浙江省温州市文成县，是一处集自然景观与人文历史于一体的旅游胜地。
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-weixin text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-weibo text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-youtube-play text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fa fa-instagram text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-6">快速链接</h3>
+                        <ul class="space-y-3">
+                            <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                            <li><a href="about.html" class="text-gray-400 hover:text-white transition-colors">景区介绍</a></li>
+                            <li><a href="attractions.html" class="text-gray-400 hover:text-white transition-colors">景点详情</a></li>
+                            <li><a href="travel-guide.html" class="text-gray-400 hover:text-white transition-colors">旅游攻略</a></li>
+                            <li><a href="reviews.html" class="text-gray-400 hover:text-white transition-colors">游客评价</a></li>
+                            <li><a href="contact.html" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+                            <li><a href="activities.html" class="text-gray-400 hover:text-white transition-colors">活动详情</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-6">景点信息</h3>
+                        <ul class="space-y-3">
+                            <li><a href="attractions.html#first-fall" class="text-gray-400 hover:text-white transition-colors">百丈一漈</a></li>
+                            <li><a href="attractions.html#second-fall" class="text-gray-400 hover:text-white transition-colors">百丈二漈</a></li>
+                            <li><a href="attractions.html#third-fall" class="text-gray-400 hover:text-white transition-colors">百丈三漈</a></li>
+                            <li><a href="attractions.html#liuji-temple" class="text-gray-400 hover:text-white transition-colors">刘基庙</a></li>
+                            <li><a href="attractions.html#tian-ding-lake" class="text-gray-400 hover:text-white transition-colors">天顶湖</a></li>
+                            <li><a href="attractions.html#stone-frog" class="text-gray-400 hover:text-white transition-colors">彩虹桥</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-6">联系我们</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">浙江省温州市文成县百丈漈镇</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-phone text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">0577-12345678</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-envelope text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">info@baizhangji.com</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-clock-o text-accent mt-1 mr-3"></i>
+                                <span class="text-gray-400">08:00-17:00 (每日)</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 pt-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p class="text-gray-500 mb-4 md:mb-0">
+                            &copy; 2025 百丈漈景区管理委员会. 保留所有权利.
+                        </p>
+                        <div class="flex space-x-6">
+                            <a href="Privacy Policy.html" class="text-gray-500 hover:text-white transition-colors">隐私政策</a>
+                            <a href="terms.html" class="text-gray-500 hover:text-white transition-colors">使用条款</a>
+                            <a href="viewport.html" class="text-gray-500 hover:text-white transition-colors">网站地图</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+
+        <!-- 回到顶部按钮 -->
+        <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary hover:bg-primary/90 text-white p-3 rounded-full shadow-elevation-2 transition-all transform hover:scale-110 opacity-0 invisible">
+            <i class="fa fa-arrow-up"></i>
+        </button>
+
+        <!-- JavaScript -->
+        <script>
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            const backToTop = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-white', 'shadow-elevation-2');
+                    navbar.classList.remove('bg-transparent');
+
+                    // 改变导航链接颜色
+                    const navLinks = navbar.querySelectorAll('a:not(.text-xl)');
+                    navLinks.forEach(link => {
+                        link.classList.remove('text-white');
+                        link.classList.add('text-dark');
+                    });
+
+                    // 显示回到顶部按钮
+                    backToTop.classList.remove('opacity-0', 'invisible');
+                    backToTop.classList.add('opacity-100', 'visible');
+                } else {
+                    navbar.classList.remove('bg-white', 'shadow-elevation-2');
+                    navbar.classList.add('bg-transparent');
+
+                    // 恢复导航链接颜色
+                    const navLinks = navbar.querySelectorAll('a:not(.text-xl)');
+                    navLinks.forEach(link => {
+                        link.classList.add('text-white');
+                        link.classList.remove('text-dark');
+                    });
+
+                    // 隐藏回到顶部按钮
+                    backToTop.classList.add('opacity-0', 'invisible');
+                    backToTop.classList.remove('opacity-100', 'visible');
+                }
+            });
+
+            // 移动端菜单切换
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // 回到顶部按钮
+            backToTop.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // 关闭移动菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // 平滑滚动到子页面
+            document.querySelectorAll('a[href^="."]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    // 关闭移动菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        </script>
